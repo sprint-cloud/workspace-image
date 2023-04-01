@@ -3,9 +3,11 @@ ARG tekton_version=0.30.0
 ARG knative_version=1.9.2
 ARG argocd_version=2.6.7
 
+USER root
 RUN apt-get update 
 RUN apt-get install -y git curl zsh python3 python3-venv
-RUN adduser --shell /bin/zsh --disabled-password --gecos '' sprinter
+#RUN adduser --shell /bin/zsh --disabled-password --gecos '' sprinter
+
 
 WORKDIR /tmp/build
 # Install Kubectl
@@ -24,22 +26,23 @@ RUN sha256sum --ignore-missing -c checksums.txt && install -o root -g root -m 07
 RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v${argocd_version}/argocd-linux-amd64\
     && curl -LO https://github.com/argoproj/argo-cd/releases/download/v${argocd_version}/argocd-${argocd_version}-checksums.txt
 RUN sha256sum --ignore-missing -c argocd-${argocd_version}-checksums.txt && install -o root -g root -m 0755 argocd-linux-amd64 /usr/local/bin/argocd
+# Install Helm
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh
+RUN ./get_helm.sh
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
 
+# # Install code-server
+# RUN curl -fsSL https://code-server.dev/install.sh | sh -s -- --prefix=/usr/local
+
 RUN rm -rf /tmp/build
 
-USER sprinter
-WORKDIR /home/sprinter
-#RUN /bin/zsh /home/sprinter/.zshrc
+USER coder
+WORKDIR /home/coder
 
 # Bootstrap homedir
 COPY zshrc .zshrc
 RUN mkdir -p .antigen
 RUN curl -L git.io/antigen > .antigen/antigen.zsh
 RUN /bin/zsh .zshrc
-
-# Temp
-USER root
-ENTRYPOINT [ "/bin/zsh" ]
