@@ -31,17 +31,10 @@ RUN ./get_helm.sh
 # Install poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
 
-# Install code server
-RUN curl -fsSL https://code.luchtenberg.eu/Sprint/workspace-template/raw/branch/main/install.sh | sh -s -- --method=standalone --prefix=/code-server --version 4.8.3
+# Bootstrap home
 RUN adduser --shell /bin/zsh --disabled-password --gecos '' coder
-
 USER coder
 WORKDIR /home/coder
-
-# Install extentions
-RUN /code-server/bin/code-server --install-extension ms-python.python
-
-# Bootstrap home
 COPY vscode_settings.json .local/share/code-server/Machine/settings.json
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -50,5 +43,4 @@ RUN mkdir /bootstrap
 RUN cp -rf . /bootstrap/ && chown -R coder:coder /bootstrap
 
 USER coder
-ENTRYPOINT [ "/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &" ]
 
