@@ -5,7 +5,7 @@ ARG argocd_version=2.6.7
 
 USER root
 RUN apt-get update 
-RUN apt-get install -y git curl zsh python3 python3-venv python3-pip
+RUN apt-get install -y git curl zsh python3 python3-venv
 
 WORKDIR /tmp/build
 # Install Kubectl
@@ -28,13 +28,12 @@ RUN sha256sum --ignore-missing -c argocd-${argocd_version}-checksums.txt && inst
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh
 RUN ./get_helm.sh
 
+# Install poetry
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
+
 # Install code server
 RUN curl -fsSL https://code.luchtenberg.eu/Sprint/workspace-template/raw/branch/main/install.sh | sh -s -- --method=standalone --prefix=/code-server --version 4.8.3
 RUN adduser --shell /bin/zsh --disabled-password --gecos '' coder
-COPY requirements.txt /
-RUN python3 -m venv /venv
-RUN /venv/bin/pip install -r /requirements.txt
-
 
 USER coder
 WORKDIR /home/coder
@@ -45,7 +44,6 @@ RUN /code-server/bin/code-server --install-extension ms-python.python
 # Bootstrap home
 COPY vscode_settings.json .local/share/code-server/Machine/settings.json
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN echo 'source /venv/bin/activate' >> .zshrc
 
 USER root
 RUN mkdir /bootstrap
