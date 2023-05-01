@@ -1,2 +1,2 @@
 # workspace-image
-Een image voor de Sprint workspace
+De container image voor de Sprint Dev Workspace.
