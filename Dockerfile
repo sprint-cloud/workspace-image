@@ -14,12 +14,12 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
 RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 # Install Tekton client
 RUN curl -LO https://github.com/tektoncd/cli/releases/download/v${tekton_version}/tkn_${tekton_version}_Linux_x86_64.tar.gz\
-    && curl -LO https://github.com/tektoncd/cli/releases/download/v${tekton_version}/checksums.txt  
-RUN sha256sum --ignore-missing -c checksums.txt && tar xvzf tkn_${tekton_version}_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
+    && curl -L https://github.com/tektoncd/cli/releases/download/v${tekton_version}/checksums.txt -o tkn.sha256
+RUN sha256sum --ignore-missing -c tkn.sha256 && tar xvzf tkn_${tekton_version}_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
 # Install Knative client
 RUN curl -LO https://github.com/knative/client/releases/download/knative-v${knative_version}/kn-linux-amd64\
-    && curl -LO https://github.com/knative/client/releases/download/knative-v${knative_version}/checksums.txt
-RUN sha256sum --ignore-missing -c checksums.txt && install -o root -g root -m 0755 kn-linux-amd64 /usr/local/bin/kn
+    && curl -L https://github.com/knative/client/releases/download/knative-v${knative_version}/checksums.txt -o kn.sha256
+RUN sha256sum --ignore-missing -c kn.sha256 && install -o root -g root -m 0755 kn-linux-amd64 /usr/local/bin/kn
 # Install Argocd client
 RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v${argocd_version}/argocd-linux-amd64\
     && curl -LO https://github.com/argoproj/argo-cd/releases/download/v${argocd_version}/argocd-${argocd_version}-checksums.txt
