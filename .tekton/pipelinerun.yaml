@@ -62,8 +62,6 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      # Customize this task if you like, or just do a taskRef
-      # to one of the hub task.
       - name: build-image
         taskRef:
           name: kaniko
@@ -75,7 +73,7 @@ spec:
           - name: dockerconfig
             workspace: dockerconfig
         params:
-          - name: image
+          - name: IMAGE
             value: $(params.image)
 
   workspaces:
