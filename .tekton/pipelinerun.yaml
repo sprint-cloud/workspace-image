@@ -14,7 +14,7 @@ metadata:
     # Fetch the git-clone task from hub, we are able to reference later on it
     # with taskRef and it will automatically be embedded into our pipeline.
     pipelinesascode.tekton.dev/task: "git-clone"
-    pipelinesascode.tekton.dev/task1: "kaniko"
+    pipelinesascode.tekton.dev/task-1: "kaniko"
 
     # Use maven task from hub
     #
@@ -52,7 +52,6 @@ spec:
       - name: fetch-repository
         taskRef:
           name: git-clone
-          kind: ClusterTask
         workspaces:
           - name: output
             workspace: source
@@ -63,12 +62,9 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      # Customize this task if you like, or just do a taskRef
-      # to one of the hub task.
       - name: build-image
         taskRef:
           name: kaniko
-          kind: ClusterTask
         runAfter:
           - fetch-repository
         workspaces:
@@ -77,7 +73,7 @@ spec:
           - name: dockerconfig
             workspace: dockerconfig
         params:
-          - name: image
+          - name: IMAGE
             value: $(params.image)
 
   workspaces:
@@ -89,8 +85,6 @@ spec:
         resources:
           requests:
             storage: 1Gi
-  # This workspace will inject secret to help the git-clone task to be able to
-  # checkout the private repositories
   - name: basic-auth
     secret:
       secretName: "{{ git_auth_secret }}"
