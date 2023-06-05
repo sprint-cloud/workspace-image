@@ -5,7 +5,7 @@ ARG argocd_version=2.6.7
 
 USER root
 RUN apt-get update 
-RUN apt-get install -y git curl zsh python3 python3-venv postgresql-client
+RUN apt-get install -y git curl zsh build-essential libssl-dev libffi-dev python3 python3-dev python3-venv python3-pip postgresql-client
 
 WORKDIR /tmp/build
 # Install Kubectl
