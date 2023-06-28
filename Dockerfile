@@ -31,8 +31,12 @@ RUN ./get_helm.sh
 # Install poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
 
+# Copy documentation
+COPY ./docs /docs
+
 # Bootstrap home
 RUN adduser --shell /bin/zsh --disabled-password --gecos '' coder
+RUN ln -s /docs /home/coder/docs
 USER coder
 WORKDIR /home/coder
 COPY vscode_settings.json .local/share/code-server/Machine/settings.json
