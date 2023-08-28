@@ -6,6 +6,7 @@ ARG argocd_version=2.6.7
 USER root
 RUN apt-get update 
 RUN apt-get install -y git curl zsh python3 python3-venv postgresql-client graphviz
+RUN pip install pylint
 
 WORKDIR /tmp/build
 # Install Kubectl
